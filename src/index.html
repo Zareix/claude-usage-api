@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Claude Usage</title>
     <link rel="stylesheet" href="tailwindcss" />
   </head>
@@ -102,7 +104,13 @@
           const h = Math.floor((data.wr % 86400) / 3600);
           const m = Math.floor((data.wr % 3600) / 60);
           document.getElementById("7d-reset").textContent =
-            data.wr <= 0 ? "now" : d > 0 ? `${d}d ${h}h ${m}m` : h > 0 ? `${h}h ${m}m` : `${m}m`;
+            data.wr <= 0
+              ? "now"
+              : d > 0
+                ? `${d}d ${h}h ${m}m`
+                : h > 0
+                  ? `${h}h ${m}m`
+                  : `${m}m`;
 
           const badge = document.getElementById("status-badge");
           badge.textContent = data.st;
