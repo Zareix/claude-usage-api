@@ -1,0 +1,6 @@
+node_modules
+.github
+.env
+CLAUDE.md
+compose.yml
+README.md

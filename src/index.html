@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Claude Usage</title>
+    <link rel="stylesheet" href="tailwindcss" />
+  </head>
+  <body
+    class="bg-zinc-950 text-zinc-100 min-h-screen flex items-center justify-center font-mono"
+  >
+    <div class="w-full max-w-sm px-4 space-y-6">
+      <div class="flex items-center justify-between">
+        <h1
+          class="text-sm font-semibold tracking-widest text-zinc-400 uppercase"
+        >
+          Claude Usage
+        </h1>
+        <span
+          id="status-badge"
+          class="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400"
+          >—</span
+        >
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <div class="flex justify-between text-xs text-zinc-500 mb-1.5">
+            <span>5h window</span>
+            <span id="5h-label">—</span>
+          </div>
+          <div class="h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <div
+              id="5h-bar"
+              class="h-full rounded-full transition-all duration-500 bg-violet-500"
+              style="width: 0%"
+            ></div>
+          </div>
+          <div class="text-right text-xs text-zinc-600 mt-1">
+            reset in <span id="5h-reset">—</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs text-zinc-500 mb-1.5">
+            <span>7d window</span>
+            <span id="7d-label">—</span>
+          </div>
+          <div class="h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <div
+              id="7d-bar"
+              class="h-full rounded-full transition-all duration-500 bg-blue-500"
+              style="width: 0%"
+            ></div>
+          </div>
+          <div class="text-right text-xs text-zinc-600 mt-1">
+            reset in <span id="7d-reset">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-xs text-zinc-600 text-right" id="last-updated">—</div>
+    </div>
+
+    <script>
+      function fmtDuration(secs) {
+        if (secs <= 0) return "now";
+        const h = Math.floor(secs / 3600);
+        const m = Math.floor((secs % 3600) / 60);
+        const s = secs % 60;
+        if (h > 0) return `${h}h ${m}m`;
+        if (m > 0) return `${m}m ${s}s`;
+        return `${s}s`;
+      }
+
+      function barColor(pct, el) {
+        el.classList.remove("bg-violet-500", "bg-amber-500", "bg-red-500");
+        if (pct >= 90) el.classList.add("bg-red-500");
+        else if (pct >= 70) el.classList.add("bg-amber-500");
+        else el.classList.add("bg-violet-500");
+      }
+
+      async function refresh() {
+        try {
+          const data = await fetch("/api/usage").then((r) => r.json());
+
+          const s5 = Math.round(data.s);
+          const s7 = Math.round(data.w);
+
+          const bar5 = document.getElementById("5h-bar");
+          const bar7 = document.getElementById("7d-bar");
+
+          bar5.style.width = `${Math.min(s5, 100)}%`;
+          bar7.style.width = `${Math.min(s7, 100)}%`;
+          barColor(s5, bar5);
+          barColor(s7, bar7);
+
+          document.getElementById("5h-label").textContent = `${s5}%`;
+          document.getElementById("7d-label").textContent = `${s7}%`;
+          document.getElementById("5h-reset").textContent = fmtDuration(
+            data.sr,
+          );
+          const d = Math.floor(data.wr / 86400);
+          const h = Math.floor((data.wr % 86400) / 3600);
+          const m = Math.floor((data.wr % 3600) / 60);
+          document.getElementById("7d-reset").textContent =
+            data.wr <= 0 ? "now" : d > 0 ? `${d}d ${h}h ${m}m` : h > 0 ? `${h}h ${m}m` : `${m}m`;
+
+          const badge = document.getElementById("status-badge");
+          badge.textContent = data.st;
+          badge.className =
+            "text-xs px-2 py-0.5 rounded-full " +
+            (data.st === "allowed"
+              ? "bg-emerald-900/60 text-emerald-400"
+              : "bg-red-900/60 text-red-400");
+
+          document.getElementById("last-updated").textContent =
+            "updated " + new Date().toLocaleTimeString();
+        } catch (e) {
+          document.getElementById("status-badge").textContent = "error";
+        }
+      }
+
+      refresh();
+      setInterval(refresh, 30_000);
+    </script>
+  </body>
+</html>
