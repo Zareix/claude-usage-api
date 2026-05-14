@@ -2,7 +2,10 @@
 
 Minimal dashboard showing Claude Pro/Max usage against rate limits. Makes a tiny API call and reads the `anthropic-ratelimit-unified-*` response headers to surface 5h and 7d utilization.
 
-<img src="screenshot.png" style="max-width: 380">
+<p align="center">
+  <img src="screenshots/homepage_light.png" alt="Homepage light screenshot"  width="360" height="270"/>
+  <img src="screenshots/homepage_dark.png" alt="Homepage dark screenshot"  width="360" height="270"/>
+</p>
 
 ## API
 
@@ -11,21 +14,30 @@ GET /api/usage
 ```
 
 ```json
-{ "s": 62, "sr": 14400, "w": 4, "wr": 432000, "st": "allowed", "ok": true }
+{
+  "s": 69,
+  "sr": 6769,
+  "w": 9,
+  "wr": 440569,
+  "st": "allowed",
+  "ok": true,
+  "at": 1778783831188
+}
 ```
 
-| field | meaning |
-|-------|---------|
-| `s`   | 5h utilization % |
-| `sr`  | seconds until 5h reset |
-| `w`   | 7d utilization % |
-| `wr`  | seconds until 7d reset |
+| field | meaning                     |
+| ----- | --------------------------- |
+| `s`   | 5h utilization %            |
+| `sr`  | seconds until 5h reset      |
+| `w`   | 7d utilization %            |
+| `wr`  | seconds until 7d reset      |
 | `st`  | `allowed` or `rate_limited` |
-| `ok`  | HTTP success |
+| `ok`  | HTTP success                |
+| `at`  | timestamp of last update    |
 
 ## Docker
 
-Image available at `ghcr.io/zareix/claude-usage-api`.
+Docker image available at `ghcr.io/zareix/claude-usage-api`.
 
 ```bash
 # .env
@@ -47,6 +59,11 @@ Runs on port `3000`. UI at `http://localhost:3000`.
 ## Dev
 
 ```bash
+# .env
+CLAUDE_OAUTH_TOKEN=your_token_here
+```
+
+```bash
 bun install
-CLAUDE_OAUTH_TOKEN=your_token bun --hot src/index.ts
+bun run dev
 ```
