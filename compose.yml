@@ -1,8 +1,6 @@
 services:
   claude-usage-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/zareix/claude-usage-api
     ports:
       - "3000:3000"
     env_file: .env
