@@ -41,7 +41,7 @@
             ></div>
           </div>
           <div class="text-right text-xs text-zinc-400 dark:text-zinc-600 mt-1">
-            reset in <span id="5h-reset">—</span>
+            reset in <span id="5h-reset">—</span> · <span id="5h-reset-at">—</span>
           </div>
         </div>
 
@@ -62,7 +62,7 @@
             ></div>
           </div>
           <div class="text-right text-xs text-zinc-400 dark:text-zinc-600 mt-1">
-            reset in <span id="7d-reset">—</span>
+            reset in <span id="7d-reset">—</span> · <span id="7d-reset-at">—</span>
           </div>
         </div>
       </div>
@@ -97,8 +97,8 @@
         try {
           const data = await fetch("/api/usage").then((r) => r.json());
 
-          const s5 = Math.round(data.s);
-          const s7 = Math.round(data.w);
+          const s5 = Math.round(data.usagePercent5h);
+          const s7 = Math.round(data.usagePercent7d);
 
           const bar5 = document.getElementById("5h-bar");
           const bar7 = document.getElementById("7d-bar");
@@ -110,31 +110,38 @@
 
           document.getElementById("5h-label").textContent = `${s5}%`;
           document.getElementById("7d-label").textContent = `${s7}%`;
-          document.getElementById("5h-reset").textContent = fmtDuration(
-            data.sr,
-          );
-          const d = Math.floor(data.wr / 86400);
-          const h = Math.floor((data.wr % 86400) / 3600);
-          const m = Math.floor((data.wr % 3600) / 60);
+          document.getElementById("5h-reset").textContent = fmtDuration(data.resetIn5h);
+          document.getElementById("5h-reset-at").textContent = new Date(
+            data.fetchedAt + data.resetIn5h * 1000,
+          ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+          const d = Math.floor(data.resetIn7d / 86400);
+          const h = Math.floor((data.resetIn7d % 86400) / 3600);
+          const m = Math.floor((data.resetIn7d % 3600) / 60);
           document.getElementById("7d-reset").textContent =
-            data.wr <= 0
+            data.resetIn7d <= 0
               ? "now"
               : d > 0
                 ? `${d}d ${h}h ${m}m`
                 : h > 0
                   ? `${h}h ${m}m`
                   : `${m}m`;
+          const resetAt7d = new Date(data.fetchedAt + data.resetIn7d * 1000);
+          document.getElementById("7d-reset-at").textContent =
+            resetAt7d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" }) +
+            " " +
+            resetAt7d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
           const badge = document.getElementById("status-badge");
-          badge.textContent = data.st;
+          badge.textContent = data.status;
           badge.className =
             "text-xs px-2 py-0.5 rounded-full " +
-            (data.st === "allowed"
+            (data.status === "allowed"
               ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-400"
               : "bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-400");
 
           document.getElementById("last-updated").textContent =
-            "updated at " + new Date(data.at).toLocaleTimeString();
+            "updated at " + new Date(data.fetchedAt).toLocaleTimeString();
         } catch (e) {
           document.getElementById("status-badge").textContent = "error";
         }

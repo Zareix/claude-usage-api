@@ -15,25 +15,25 @@ GET /api/usage
 
 ```json
 {
-  "s": 69,
-  "sr": 6769,
-  "w": 9,
-  "wr": 440569,
-  "st": "allowed",
+  "usagePercent5h": 69,
+  "resetIn5h": 6769,
+  "usagePercent7d": 9,
+  "resetIn7d": 440569,
+  "status": "allowed",
   "ok": true,
-  "at": 1778783831188
+  "fetchedAt": 1778783831188
 }
 ```
 
-| field | meaning                     |
-| ----- | --------------------------- |
-| `s`   | 5h utilization %            |
-| `sr`  | seconds until 5h reset      |
-| `w`   | 7d utilization %            |
-| `wr`  | seconds until 7d reset      |
-| `st`  | `allowed` or `rate_limited` |
-| `ok`  | HTTP success                |
-| `at`  | timestamp of last update    |
+| field            | meaning                     |
+| ---------------- | --------------------------- |
+| `usagePercent5h`  | 5h utilization %            |
+| `resetIn5h`      | seconds until 5h reset      |
+| `usagePercent7d`  | 7d utilization %            |
+| `resetIn7d`      | seconds until 7d reset      |
+| `status`         | `allowed` or `rate_limited` |
+| `ok`             | HTTP success                |
+| `fetchedAt`      | timestamp of last fetch     |
 
 ## Docker
 

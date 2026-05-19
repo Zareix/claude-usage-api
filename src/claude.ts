@@ -1,9 +1,9 @@
 export type ClaudeUsage = {
-  s: number; // 5h utilization %
-  sr: number; // seconds until 5h reset
-  w: number; // 7d utilization %
-  wr: number; // seconds until 7d reset
-  st: string; // unified status
+  usagePercent5h: number; // 5h utilization %
+  resetIn5h: number;     // seconds until 5h reset
+  usagePercent7d: number; // 7d utilization %
+  resetIn7d: number;     // seconds until 7d reset
+  status: string;        // unified status
   ok: boolean;
 };
 
@@ -28,11 +28,11 @@ export const getClaudeUsage = async (): Promise<ClaudeUsage> => {
   const h = res.headers;
 
   return {
-    s:
+    usagePercent5h:
       Number.parseFloat(
         h.get("anthropic-ratelimit-unified-5h-utilization") ?? "0",
       ) * 100,
-    sr: Math.max(
+    resetIn5h: Math.max(
       0,
       Math.round(
         Number.parseFloat(
@@ -41,11 +41,11 @@ export const getClaudeUsage = async (): Promise<ClaudeUsage> => {
           Date.now() / 1000,
       ),
     ),
-    w:
+    usagePercent7d:
       Number.parseFloat(
         h.get("anthropic-ratelimit-unified-7d-utilization") ?? "0",
       ) * 100,
-    wr: Math.max(
+    resetIn7d: Math.max(
       0,
       Math.round(
         Number.parseFloat(
@@ -54,7 +54,7 @@ export const getClaudeUsage = async (): Promise<ClaudeUsage> => {
           Date.now() / 1000,
       ),
     ),
-    st:
+    status:
       h.get("anthropic-ratelimit-unified-status") ??
       (res.ok ? "allowed" : `error_${res.status}`),
     ok: res.ok,
