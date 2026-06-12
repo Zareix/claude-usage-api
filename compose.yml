@@ -1,6 +1,6 @@
 services:
   claude-usage-api:
-    image: ghcr.io/zareix/claude-usage-api
+    build: .
     ports:
       - "3000:3000"
     env_file: .env

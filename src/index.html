@@ -4,23 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Claude Usage</title>
+    <link rel="icon" href="./assets/favicon.svg" />
     <link rel="stylesheet" href="tailwindcss" />
   </head>
   <body
     class="bg-zinc-100 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 min-h-screen flex items-center justify-center font-mono"
   >
     <div class="w-full max-w-sm px-4 space-y-6">
-      <div class="flex items-center justify-between">
+      <div class="grid grid-cols-3 gap-2 items-center">
+        <div class="flex items-center">
+          <img src="./assets/favicon.svg" class="size-8" />
+        </div>
         <h1
-          class="text-sm font-semibold tracking-widest text-zinc-500 dark:text-zinc-400 uppercase"
+          class="text-lg font-semibold font-serif text-center tracking-widest text-zinc-500 dark:text-zinc-400 uppercase"
         >
-          Claude Usage
+          Usage
         </h1>
-        <span
-          id="status-badge"
-          class="text-xs px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-          >—</span
-        >
+        <div class="flex justify-end items-center">
+          <span
+            id="status-badge"
+            class="text-xs px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+            >—</span
+          >
+        </div>
       </div>
 
       <div class="space-y-4">
@@ -28,8 +34,8 @@
           <div
             class="flex justify-between text-xs text-zinc-500 dark:text-zinc-500 mb-1.5"
           >
+            <span id="5h-label" class="text-sm">—</span>
             <span>5h window</span>
-            <span id="5h-label">—</span>
           </div>
           <div
             class="h-2 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden"
@@ -41,7 +47,8 @@
             ></div>
           </div>
           <div class="text-right text-xs text-zinc-400 dark:text-zinc-600 mt-1">
-            reset in <span id="5h-reset">—</span> · <span id="5h-reset-at">—</span>
+            reset in <span id="5h-reset">—</span> ·
+            <span id="5h-reset-at">—</span>
           </div>
         </div>
 
@@ -49,8 +56,8 @@
           <div
             class="flex justify-between text-xs text-zinc-500 dark:text-zinc-500 mb-1.5"
           >
+            <span id="7d-label" class="text-sm">—</span>
             <span>7d window</span>
-            <span id="7d-label">—</span>
           </div>
           <div
             class="h-2 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden"
@@ -62,7 +69,8 @@
             ></div>
           </div>
           <div class="text-right text-xs text-zinc-400 dark:text-zinc-600 mt-1">
-            reset in <span id="7d-reset">—</span> · <span id="7d-reset-at">—</span>
+            reset in <span id="7d-reset">—</span> ·
+            <span id="7d-reset-at">—</span>
           </div>
         </div>
       </div>
@@ -110,7 +118,9 @@
 
           document.getElementById("5h-label").textContent = `${s5}%`;
           document.getElementById("7d-label").textContent = `${s7}%`;
-          document.getElementById("5h-reset").textContent = fmtDuration(data.resetIn5h);
+          document.getElementById("5h-reset").textContent = fmtDuration(
+            data.resetIn5h,
+          );
           document.getElementById("5h-reset-at").textContent = new Date(
             data.fetchedAt + data.resetIn5h * 1000,
           ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -128,9 +138,16 @@
                   : `${m}m`;
           const resetAt7d = new Date(data.fetchedAt + data.resetIn7d * 1000);
           document.getElementById("7d-reset-at").textContent =
-            resetAt7d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" }) +
+            resetAt7d.toLocaleDateString([], {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+            }) +
             " " +
-            resetAt7d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            resetAt7d.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
 
           const badge = document.getElementById("status-badge");
           badge.textContent = data.status;
