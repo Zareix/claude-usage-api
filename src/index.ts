@@ -15,11 +15,7 @@ const server = Bun.serve({
   routes: {
     "/": index,
     "/api/usage": {
-      GET: async () =>
-        new Response(JSON.stringify(await getCachedUsage()), {
-          status: 200,
-          headers: { "content-type": "application/json" },
-        }),
+      GET: async () => Response.json(await getCachedUsage()),
     },
   },
 })
