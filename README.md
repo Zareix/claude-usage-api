@@ -27,9 +27,9 @@ GET /api/usage
 
 | field            | meaning                     |
 | ---------------- | --------------------------- |
-| `usagePercent5h`  | 5h utilization %            |
+| `usagePercent5h` | 5h utilization %            |
 | `resetIn5h`      | seconds until 5h reset      |
-| `usagePercent7d`  | 7d utilization %            |
+| `usagePercent7d` | 7d utilization %            |
 | `resetIn7d`      | seconds until 7d reset      |
 | `status`         | `allowed` or `rate_limited` |
 | `ok`             | HTTP success                |

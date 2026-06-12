@@ -4,26 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Claude Usage</title>
-    <link rel="icon" href="./assets/favicon.svg" />
-    <link rel="stylesheet" href="tailwindcss" />
+    <link rel="icon" href="assets/favicon.svg" />
+    <link rel="stylesheet" href="assets/styles.css" />
   </head>
   <body
-    class="bg-zinc-100 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 min-h-screen flex items-center justify-center font-mono"
+    class="flex min-h-screen items-center justify-center bg-zinc-100 font-mono text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100"
   >
-    <div class="w-full max-w-sm px-4 space-y-6">
-      <div class="grid grid-cols-3 gap-2 items-center">
+    <div class="w-full max-w-sm space-y-6 px-4">
+      <div class="grid grid-cols-3 items-center gap-2">
         <div class="flex items-center">
-          <img src="./assets/favicon.svg" class="size-8" />
+          <img src="assets/favicon.svg" class="size-8" />
         </div>
         <h1
-          class="text-lg font-semibold font-serif text-center tracking-widest text-zinc-500 dark:text-zinc-400 uppercase"
+          class="text-center font-serif text-xl font-semibold tracking-widest text-zinc-500 uppercase dark:text-zinc-400"
         >
           Usage
         </h1>
-        <div class="flex justify-end items-center">
+        <div class="flex items-center justify-end">
           <span
             id="status-badge"
-            class="text-xs px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+            class="rounded-full bg-zinc-200 px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
             >—</span
           >
         </div>
@@ -31,103 +31,88 @@
 
       <div class="space-y-4">
         <div>
-          <div
-            class="flex justify-between text-xs text-zinc-500 dark:text-zinc-500 mb-1.5"
-          >
+          <div class="mb-1.5 flex justify-between text-xs text-zinc-500 dark:text-zinc-500">
             <span id="5h-label" class="text-sm">—</span>
             <span>5h window</span>
           </div>
-          <div
-            class="h-2 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden"
-          >
+          <div class="h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
             <div
               id="5h-bar"
-              class="h-full rounded-full transition-all duration-500 bg-violet-500"
+              class="h-full rounded-full bg-violet-500 transition-all duration-500"
               style="width: 0%"
             ></div>
           </div>
-          <div class="text-right text-xs text-zinc-400 dark:text-zinc-600 mt-1">
+          <div class="mt-1 text-right text-xs text-zinc-400 dark:text-zinc-600">
             reset in <span id="5h-reset">—</span> ·
             <span id="5h-reset-at">—</span>
           </div>
         </div>
 
         <div>
-          <div
-            class="flex justify-between text-xs text-zinc-500 dark:text-zinc-500 mb-1.5"
-          >
+          <div class="mb-1.5 flex justify-between text-xs text-zinc-500 dark:text-zinc-500">
             <span id="7d-label" class="text-sm">—</span>
             <span>7d window</span>
           </div>
-          <div
-            class="h-2 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden"
-          >
+          <div class="h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
             <div
               id="7d-bar"
-              class="h-full rounded-full transition-all duration-500 bg-blue-500"
+              class="h-full rounded-full bg-blue-500 transition-all duration-500"
               style="width: 0%"
             ></div>
           </div>
-          <div class="text-right text-xs text-zinc-400 dark:text-zinc-600 mt-1">
+          <div class="mt-1 text-right text-xs text-zinc-400 dark:text-zinc-600">
             reset in <span id="7d-reset">—</span> ·
             <span id="7d-reset-at">—</span>
           </div>
         </div>
       </div>
 
-      <div
-        class="text-xs text-zinc-400 dark:text-zinc-600 text-right"
-        id="last-updated"
-      >
-        —
-      </div>
+      <div class="text-right text-xs text-zinc-300 dark:text-zinc-600" id="last-updated">—</div>
     </div>
 
     <script>
       function fmtDuration(secs) {
-        if (secs <= 0) return "now";
-        const h = Math.floor(secs / 3600);
-        const m = Math.floor((secs % 3600) / 60);
-        const s = secs % 60;
-        if (h > 0) return `${h}h ${m}m`;
-        if (m > 0) return `${m}m ${s}s`;
-        return `${s}s`;
+        if (secs <= 0) return "now"
+        const h = Math.floor(secs / 3600)
+        const m = Math.floor((secs % 3600) / 60)
+        const s = secs % 60
+        if (h > 0) return `${h}h ${m}m`
+        if (m > 0) return `${m}m ${s}s`
+        return `${s}s`
       }
 
       function barColor(pct, el) {
-        el.classList.remove("bg-violet-500", "bg-amber-500", "bg-red-500");
-        if (pct >= 90) el.classList.add("bg-red-500");
-        else if (pct >= 70) el.classList.add("bg-amber-500");
-        else el.classList.add("bg-violet-500");
+        el.classList.remove("bg-violet-500", "bg-amber-500", "bg-red-500")
+        if (pct >= 90) el.classList.add("bg-red-500")
+        else if (pct >= 70) el.classList.add("bg-amber-500")
+        else el.classList.add("bg-violet-500")
       }
 
       async function fetchData() {
         try {
-          const data = await fetch("/api/usage").then((r) => r.json());
+          const data = await fetch("/api/usage").then((r) => r.json())
 
-          const s5 = Math.round(data.usagePercent5h);
-          const s7 = Math.round(data.usagePercent7d);
+          const s5 = Math.round(data.usagePercent5h)
+          const s7 = Math.round(data.usagePercent7d)
 
-          const bar5 = document.getElementById("5h-bar");
-          const bar7 = document.getElementById("7d-bar");
+          const bar5 = document.getElementById("5h-bar")
+          const bar7 = document.getElementById("7d-bar")
 
-          bar5.style.width = `${Math.min(s5, 100)}%`;
-          bar7.style.width = `${Math.min(s7, 100)}%`;
-          barColor(s5, bar5);
-          barColor(s7, bar7);
+          bar5.style.width = `${Math.min(s5, 100)}%`
+          bar7.style.width = `${Math.min(s7, 100)}%`
+          barColor(s5, bar5)
+          barColor(s7, bar7)
 
-          document.getElementById("5h-label").textContent = `${s5}%`;
-          document.getElementById("7d-label").textContent = `${s7}%`;
-          document.getElementById("5h-reset").textContent = fmtDuration(
-            data.resetIn5h,
-          );
+          document.getElementById("5h-label").textContent = `${s5}%`
+          document.getElementById("7d-label").textContent = `${s7}%`
+          document.getElementById("5h-reset").textContent = fmtDuration(data.resetIn5h)
           document.getElementById("5h-reset-at").textContent = new Date(
             data.fetchedAt + data.resetIn5h * 1000,
-          ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+          ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
 
-          const d = Math.floor(data.resetIn7d / 86400);
-          const h = Math.floor((data.resetIn7d % 86400) / 3600);
-          const m = Math.floor((data.resetIn7d % 3600) / 60);
+          const d = Math.floor(data.resetIn7d / 86400)
+          const h = Math.floor((data.resetIn7d % 86400) / 3600)
+          const m = Math.floor((data.resetIn7d % 3600) / 60)
           document.getElementById("7d-reset").textContent =
             data.resetIn7d <= 0
               ? "now"
@@ -135,8 +120,8 @@
                 ? `${d}d ${h}h ${m}m`
                 : h > 0
                   ? `${h}h ${m}m`
-                  : `${m}m`;
-          const resetAt7d = new Date(data.fetchedAt + data.resetIn7d * 1000);
+                  : `${m}m`
+          const resetAt7d = new Date(data.fetchedAt + data.resetIn7d * 1000)
           document.getElementById("7d-reset-at").textContent =
             resetAt7d.toLocaleDateString([], {
               weekday: "short",
@@ -147,24 +132,24 @@
             resetAt7d.toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
-            });
+            })
 
-          const badge = document.getElementById("status-badge");
-          badge.textContent = data.status;
+          const badge = document.getElementById("status-badge")
+          badge.textContent = data.status
           badge.className =
             "text-xs px-2 py-0.5 rounded-full " +
             (data.status === "allowed"
               ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-400"
-              : "bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-400");
+              : "bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-400")
 
           document.getElementById("last-updated").textContent =
-            "updated at " + new Date(data.fetchedAt).toLocaleTimeString();
+            "updated at " + new Date(data.fetchedAt).toLocaleTimeString()
         } catch (e) {
-          document.getElementById("status-badge").textContent = "error";
+          document.getElementById("status-badge").textContent = "error"
         }
       }
 
-      fetchData();
+      fetchData()
     </script>
   </body>
 </html>

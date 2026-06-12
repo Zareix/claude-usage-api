@@ -4,3 +4,5 @@ node_modules
 CLAUDE.md
 compose.yml
 README.md
+.ox*rc.json
+.claude

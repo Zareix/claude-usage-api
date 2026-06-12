@@ -1,23 +1,31 @@
 {
   "name": "claude-usage-api",
-  "module": "src/index.ts",
-  "type": "module",
+  "version": "1.3.0",
   "private": true,
-  "version": "1.2.0",
+  "type": "module",
+  "module": "src/index.ts",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "build": "bun run build.ts"
-  },
-  "devDependencies": {
-    "@types/bun": "1.3.14"
-  },
-  "peerDependencies": {
-    "typescript": "^6.0.3"
+    "build": "bun run build.ts",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "check": "bun run lint && bun run fmt"
   },
   "dependencies": {
     "@tailwindcss/node": "^4.3.0",
     "@tailwindcss/oxide": "^4.3.0",
     "bun-plugin-tailwind": "^0.1.2",
     "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.14",
+    "oxfmt": "^0.54.0",
+    "oxlint": "^1.69.0",
+    "oxlint-tsgolint": "^0.23.0"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.3"
   }
 }
