@@ -7,4 +7,5 @@ await Bun.build({
   compile: {
     outfile: "./server",
   },
+  format: "esm",
 })
