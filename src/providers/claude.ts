@@ -1,13 +1,6 @@
-export type ClaudeUsage = {
-  usagePercent5h: number // 5h utilization %
-  resetIn5h: number // seconds until 5h reset
-  usagePercent7d: number // 7d utilization %
-  resetIn7d: number // seconds until 7d reset
-  status: string // unified status
-  ok: boolean
-}
+import type { Usage } from ".."
 
-export const getClaudeUsage = async (): Promise<ClaudeUsage> => {
+export const getClaudeUsage = async (): Promise<Usage> => {
   const token = process.env.CLAUDE_OAUTH_TOKEN
   if (!token) throw new Error("CLAUDE_OAUTH_TOKEN not set")
 

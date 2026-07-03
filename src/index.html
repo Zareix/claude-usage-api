@@ -13,9 +13,9 @@
     <div class="w-full max-w-sm space-y-6 px-4">
       <div class="grid grid-cols-3 items-center gap-2">
         <div class="flex items-center">
-          <div>
+          <a id="logo-link" href="#">
             <div id="claude-animation" class="grid size-8"></div>
-          </div>
+          </a>
         </div>
         <h1
           class="text-center font-serif text-xl font-semibold tracking-widest text-zinc-500 uppercase dark:text-zinc-400"
@@ -90,9 +90,13 @@
         else el.classList.add("bg-violet-500")
       }
 
+      const provider = new URLSearchParams(location.search).get("provider") || "claude"
+      const otherProvider = provider === "claude" ? "opencode" : "claude"
+      document.getElementById("logo-link").href = `?provider=${otherProvider}`
+
       async function fetchData() {
         try {
-          const data = await fetch("/api/usage").then((r) => r.json())
+          const data = await fetch(`/api/usage?provider=${provider}`).then((r) => r.json())
 
           const s5 = Math.round(data.usagePercent5h)
           const s7 = Math.round(data.usagePercent7d)
@@ -436,7 +440,16 @@
         ],
       }
 
-      window.PixelEngine.mount(document.getElementById("claude-animation"), { preset: PRESET })
+      if (provider === "opencode") {
+        const el = document.getElementById("claude-animation")
+        el.innerHTML = ""
+        const img = document.createElement("img")
+        img.src = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/opencode.webp"
+        img.className = "size-8 object-contain"
+        el.appendChild(img)
+      } else {
+        window.PixelEngine.mount(document.getElementById("claude-animation"), { preset: PRESET })
+      }
     </script>
   </body>
 </html>
