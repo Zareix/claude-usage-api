@@ -67,6 +67,24 @@
             <span id="7d-reset-at">—</span>
           </div>
         </div>
+
+        <div id="monthly-window" class="hidden">
+          <div class="mb-1.5 flex justify-between text-xs text-zinc-500 dark:text-zinc-500">
+            <span id="monthly-label" class="text-sm">—</span>
+            <span>monthly window</span>
+          </div>
+          <div class="h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+            <div
+              id="monthly-bar"
+              class="h-full rounded-full bg-emerald-500 transition-all duration-500"
+              style="width: 0%"
+            ></div>
+          </div>
+          <div class="mt-1 text-right text-xs text-zinc-400 dark:text-zinc-600">
+            reset in <span id="monthly-reset">—</span> ·
+            <span id="monthly-reset-at">—</span>
+          </div>
+        </div>
       </div>
 
       <div class="text-right text-xs text-zinc-300 dark:text-zinc-600" id="last-updated">—</div>
@@ -83,11 +101,11 @@
         return `${s}s`
       }
 
-      function barColor(pct, el) {
-        el.classList.remove("bg-violet-500", "bg-amber-500", "bg-red-500")
+      function barColor(pct, el, base = "bg-violet-500") {
+        el.classList.remove("bg-violet-500", "bg-amber-500", "bg-red-500", "bg-emerald-500", "bg-blue-500")
         if (pct >= 90) el.classList.add("bg-red-500")
         else if (pct >= 70) el.classList.add("bg-amber-500")
-        else el.classList.add("bg-violet-500")
+        else el.classList.add(base)
       }
 
       const provider = new URLSearchParams(location.search).get("provider") || "claude"
@@ -147,6 +165,41 @@
             (data.status === "allowed"
               ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-400"
               : "bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-400")
+
+          // opencode go only: monthly window from the official usage API
+          if (data.monthlyUsagePercent !== undefined) {
+            const monthly = Math.round(data.monthlyUsagePercent)
+            const monthlyBar = document.getElementById("monthly-bar")
+            monthlyBar.style.width = `${Math.min(monthly, 100)}%`
+            barColor(monthly, monthlyBar, "bg-emerald-500")
+            document.getElementById("monthly-label").textContent = `${monthly}%`
+            const resetMonthly = Math.floor((data.resetInMonthly ?? 0) / 86400)
+            const hMonthly = Math.floor(((data.resetInMonthly ?? 0) % 86400) / 3600)
+            const mMonthly = Math.floor(((data.resetInMonthly ?? 0) % 3600) / 60)
+            document.getElementById("monthly-reset").textContent =
+              (data.resetInMonthly ?? 0) <= 0
+                ? "now"
+                : resetMonthly > 0
+                  ? `${resetMonthly}d ${hMonthly}h ${mMonthly}m`
+                  : hMonthly > 0
+                    ? `${hMonthly}h ${mMonthly}m`
+                    : `${mMonthly}m`
+            const resetAtMonthly = new Date(
+              (data.fetchedAt ?? Date.now()) + (data.resetInMonthly ?? 0) * 1000,
+            )
+            document.getElementById("monthly-reset-at").textContent =
+              resetAtMonthly.toLocaleDateString([], {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+              }) +
+              " " +
+              resetAtMonthly.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            document.getElementById("monthly-window").classList.remove("hidden")
+          }
 
           document.getElementById("last-updated").textContent =
             "updated at " + new Date(data.fetchedAt).toLocaleTimeString()

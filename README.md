@@ -42,6 +42,7 @@ Docker image available at `ghcr.io/zareix/claude-usage-api`.
 ```bash
 # .env
 CLAUDE_OAUTH_TOKEN=your_token_here
+OPENCODE_API_KEY=sk-...
 ```
 
 ```bash
@@ -51,7 +52,7 @@ docker compose up
 Or run directly:
 
 ```bash
-docker run -e CLAUDE_OAUTH_TOKEN=your_token -p 3000:3000 ghcr.io/zareix/claude-usage-api
+docker run -e CLAUDE_OAUTH_TOKEN=your_token -e OPENCODE_API_KEY=sk-... -p 3000:3000 ghcr.io/zareix/claude-usage-api
 ```
 
 Runs on port `3000`. UI at `http://localhost:3000`.
@@ -61,9 +62,16 @@ Runs on port `3000`. UI at `http://localhost:3000`.
 ```bash
 # .env
 CLAUDE_OAUTH_TOKEN=your_token_here
+OPENCODE_API_KEY=sk-...
 ```
 
 ```bash
 bun install
 bun run dev
 ```
+
+View OpenCode Go usage at `http://localhost:3000/?provider=opencode`.
+
+The OpenCode Go provider uses the official usage endpoint
+(`GET https://opencode.ai/zen/go/v1/usage`) with your Go API key. It reports
+5h (rolling), 7d (weekly) and monthly utilization.

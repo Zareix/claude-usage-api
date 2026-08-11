@@ -17,6 +17,10 @@ export type Usage = {
   resetIn7d: number // seconds until 7d reset
   status: string // unified status
   ok: boolean
+  // opencode go only (official usage API)
+  useBalance?: boolean
+  monthlyUsagePercent?: number
+  resetInMonthly?: number
 }
 const cache = new Map<Provider, { data: Usage; at: number }>()
 

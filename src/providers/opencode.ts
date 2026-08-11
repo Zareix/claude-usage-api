@@ -1,62 +1,51 @@
 import type { Usage } from ".."
 
-const parseResetIn = (text: string): number => {
-  const days = Number.parseInt(text.match(/(\d+)\s*day/)?.[1] ?? "0", 10)
-  const hours = Number.parseInt(text.match(/(\d+)\s*hour/)?.[1] ?? "0", 10)
-  const minutes = Number.parseInt(text.match(/(\d+)\s*minute/)?.[1] ?? "0", 10)
-  return days * 86400 + hours * 3600 + minutes * 60
+type GoUsageResponse = {
+  useBalance: boolean
+  rollingUsage: {
+    status: "ok" | "rate-limited"
+    resetInSec: number
+    usagePercent: number
+  }
+  weeklyUsage: {
+    status: "ok" | "rate-limited"
+    resetInSec: number
+    usagePercent: number
+  }
+  monthlyUsage: {
+    status: "ok" | "rate-limited"
+    resetInSec: number
+    usagePercent: number
+  }
 }
 
+// Official OpenCode Go usage endpoint (anomalyco/opencode#16513).
+// Returns rolling (5h), weekly (7d) and monthly usage in dollars.
 export const getOpenCodeUsage = async (): Promise<Usage> => {
-  const page = await fetch(`https://opencode.ai/workspace/${process.env.OPENCODE_WORKSPACE}/go`, {
+  const apiKey = process.env.OPENCODE_API_KEY
+  if (!apiKey) throw new Error("OPENCODE_API_KEY not set")
+
+  const res = await fetch("https://opencode.ai/zen/go/v1/usage", {
     headers: {
-      "user-agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
-      Cookie: `auth=${process.env.OPENCODE_AUTH_COOKIE}`,
+      Authorization: `Bearer ${apiKey}`,
     },
   })
 
-  const usageValues: string[] = []
-  let usageBuffer = ""
+  if (!res.ok) throw new Error(`usage API returned ${res.status}`)
 
-  const resetsInValues: string[] = []
-  let resetsInBuffer = ""
-
-  const rewriter = new HTMLRewriter()
-    .on("[data-slot='usage-value']", {
-      element(el) {
-        usageBuffer = ""
-        el.onEndTag(() => {
-          usageValues.push(usageBuffer.trim())
-        })
-      },
-      text(chunk) {
-        usageBuffer += chunk.text
-      },
-    })
-    .on("[data-slot='reset-time']", {
-      element(el) {
-        resetsInBuffer = ""
-        el.onEndTag(() => {
-          resetsInValues.push(resetsInBuffer.trim())
-        })
-      },
-      text(chunk) {
-        resetsInBuffer += chunk.text
-      },
-    })
-
-  await rewriter.transform(page).text()
-
-  const [usagePercent5h, usagePercent7d] = usageValues.map((v) => Number.parseFloat(v))
-  const [resetIn5h, resetIn7d] = resetsInValues.map(parseResetIn)
+  const data = (await res.json()) as GoUsageResponse
+  const rateLimited =
+    data.rollingUsage.status === "rate-limited" || data.weeklyUsage.status === "rate-limited"
 
   return {
     ok: true,
-    usagePercent5h: usagePercent5h ?? 0,
-    resetIn5h: resetIn5h ?? 0,
-    usagePercent7d: usagePercent7d ?? 0,
-    resetIn7d: resetIn7d ?? 0,
-    status: (usagePercent5h ?? 0) < 100 && (usagePercent7d ?? 0) < 100 ? "allowed" : "rate_limited",
+    usagePercent5h: data.rollingUsage.usagePercent,
+    resetIn5h: data.rollingUsage.resetInSec,
+    usagePercent7d: data.weeklyUsage.usagePercent,
+    resetIn7d: data.weeklyUsage.resetInSec,
+    status: rateLimited ? "rate_limited" : "allowed",
+    useBalance: data.useBalance,
+    monthlyUsagePercent: data.monthlyUsage.usagePercent,
+    resetInMonthly: data.monthlyUsage.resetInSec,
   }
 }
