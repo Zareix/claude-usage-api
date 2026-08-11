@@ -166,7 +166,6 @@
               ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-400"
               : "bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-400")
 
-          // opencode go only: monthly window from the official usage API
           if (data.monthlyUsagePercent !== undefined) {
             const monthly = Math.round(data.monthlyUsagePercent)
             const monthlyBar = document.getElementById("monthly-bar")
