@@ -19,8 +19,6 @@ type GoUsageResponse = {
   }
 }
 
-// Official OpenCode Go usage endpoint (anomalyco/opencode#16513).
-// Returns rolling (5h), weekly (7d) and monthly usage in dollars.
 export const getOpenCodeUsage = async (): Promise<Usage> => {
   const apiKey = process.env.OPENCODE_API_KEY
   if (!apiKey) throw new Error("OPENCODE_API_KEY not set")
