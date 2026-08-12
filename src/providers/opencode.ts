@@ -1,23 +1,15 @@
 import type { Usage } from ".."
 
 type GoUsageResponse = {
-  useBalance: boolean
-  rollingUsage: {
-    status: "ok" | "rate-limited"
-    resetInSec: number
-    usagePercent: number
-  }
-  weeklyUsage: {
-    status: "ok" | "rate-limited"
-    resetInSec: number
-    usagePercent: number
-  }
-  monthlyUsage: {
-    status: "ok" | "rate-limited"
-    resetInSec: number
-    usagePercent: number
+  usage: {
+    rolling: { status: "ok" | "rate-limited"; percent: number; resetsAt: string }
+    weekly: { status: "ok" | "rate-limited"; percent: number; resetsAt: string }
+    monthly: { status: "ok" | "rate-limited"; percent: number; resetsAt: string }
   }
 }
+
+const secsUntil = (iso: string): number =>
+  Math.max(0, Math.round((new Date(iso).getTime() - Date.now()) / 1000))
 
 export const getOpenCodeUsage = async (): Promise<Usage> => {
   const apiKey = process.env.OPENCODE_API_KEY
@@ -33,17 +25,16 @@ export const getOpenCodeUsage = async (): Promise<Usage> => {
 
   const data = (await res.json()) as GoUsageResponse
   const rateLimited =
-    data.rollingUsage.status === "rate-limited" || data.weeklyUsage.status === "rate-limited"
+    data.usage.rolling.status === "rate-limited" || data.usage.weekly.status === "rate-limited"
 
   return {
     ok: true,
-    usagePercent5h: data.rollingUsage.usagePercent,
-    resetIn5h: data.rollingUsage.resetInSec,
-    usagePercent7d: data.weeklyUsage.usagePercent,
-    resetIn7d: data.weeklyUsage.resetInSec,
+    usagePercent5h: data.usage.rolling.percent,
+    resetIn5h: secsUntil(data.usage.rolling.resetsAt),
+    usagePercent7d: data.usage.weekly.percent,
+    resetIn7d: secsUntil(data.usage.weekly.resetsAt),
     status: rateLimited ? "rate_limited" : "allowed",
-    useBalance: data.useBalance,
-    monthlyUsagePercent: data.monthlyUsage.usagePercent,
-    resetInMonthly: data.monthlyUsage.resetInSec,
+    monthlyUsagePercent: data.usage.monthly.percent,
+    resetInMonthly: secsUntil(data.usage.monthly.resetsAt),
   }
 }
