@@ -9,6 +9,7 @@ if (Bun.argv[2] === "health") {
 
 const CACHE_TTL = 60_000
 const PROVIDERS = ["claude", "opencode"]
+
 type Provider = (typeof PROVIDERS)[number]
 export type Usage = {
   usagePercent5h: number // 5h utilization %
@@ -20,6 +21,7 @@ export type Usage = {
   monthlyUsagePercent?: number
   resetInMonthly?: number
 }
+
 const cache = new Map<Provider, { data: Usage; at: number }>()
 
 const getCachedUsage = async (provider: Provider): Promise<Usage & { fetchedAt: number }> => {
@@ -31,16 +33,21 @@ const getCachedUsage = async (provider: Provider): Promise<Usage & { fetchedAt: 
   return { ...data, fetchedAt: entry.at }
 }
 
+const isProvider = (value: string): value is Provider => (PROVIDERS as string[]).includes(value)
+
 const server = Bun.serve({
   routes: {
-    "/": index,
+    "/": () => Response.redirect("/opencode"),
     "/api/health": { GET: () => new Response("ok") },
-    "/api/usage": {
-      GET: async ({ url }) => {
-        const provider = new URL(url).searchParams.get("provider") as Provider | undefined
-        return Response.json(await getCachedUsage(provider ?? "claude"))
+    "/api/:provider/usage": {
+      GET: async (req) => {
+        const { provider } = req.params
+        if (!isProvider(provider)) return new Response("Not found", { status: 404 })
+        return Response.json(await getCachedUsage(provider))
       },
     },
+    "/claude": index,
+    "/opencode": index,
   },
 })
 

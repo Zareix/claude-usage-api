@@ -10,7 +10,7 @@ Minimal dashboard showing Claude Pro/Max usage against rate limits. Makes a tiny
 ## API
 
 ```
-GET /api/usage
+GET /api/:provider/usage
 ```
 
 ```json
@@ -55,7 +55,7 @@ Or run directly:
 docker run -e CLAUDE_OAUTH_TOKEN=your_token -e OPENCODE_API_KEY=sk-... -p 3000:3000 ghcr.io/zareix/claude-usage-api
 ```
 
-Runs on port `3000`. UI at `http://localhost:3000`.
+Runs on port `3000`. UI at `http://localhost:3000` (redirects to `/opencode`).
 
 ## Dev
 
@@ -70,7 +70,7 @@ bun install
 bun run dev
 ```
 
-View OpenCode Go usage at `http://localhost:3000/?provider=opencode`.
+View OpenCode Go usage at `http://localhost:3000/opencode`.
 
 The OpenCode Go provider uses the official usage endpoint
 (`GET https://opencode.ai/zen/go/v1/usage`) with your Go API key. It reports
